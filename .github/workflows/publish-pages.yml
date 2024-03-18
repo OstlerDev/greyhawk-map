@@ -5,12 +5,14 @@ on:
   push:
     branches:
       - main  # Set to the default branch
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     
     steps:
       - name: Checkout Repository
@@ -21,6 +23,7 @@ jobs:
         with:
           node-version: 21.x
           cache: 'npm'
+          cache-dependency-path: web/package-lock.json # use subdir
       
       - name: Install Dependencies
         run: cd web && npm install
@@ -39,6 +42,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
-        environment:
-          name: github-pages
-          url: ${{ steps.deployment.outputs.page_url }}
+        # environment:
+        #   name: github-pages
+        #   url: ${{ steps.deployment.outputs.page_url }}
