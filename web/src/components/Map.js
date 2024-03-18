@@ -71,13 +71,23 @@ const ADnDMap = () => {
       minZoom={minZoomLevel} 
       maxZoom={maxZoomLevel}
       zoomSnap={0.25}
-      zoomDelta={0.05}
+      zoomDelta={0.5}
       // wheelDebounceTime={250}
       // inertiaMaxSpeed={25}
-      // zoomAnimation={false}
+      zoomAnimation={false}
       // zoomAnimationThreshold={10000}
       style={{ height: '100vh', width: '100%' }}
-      renderer={L.SVG}
+      renderer={L.Canvas}
+
+      whenCreated={map => {
+        map.options.zoomAnimation = true; // Ensure zoom animation is enabled
+        L.Map.mergeOptions({
+          zoomAnimationThreshold: 4,
+        });
+        map._zoomAnimated = true; // Private variable, use with caution
+        L.DomUtil.TRANSITION = map.options.zoomAnimation && L.Browser.any3d ? L.DomUtil.TRANSITION : false;
+        L.DomUtil.TRANSITION_DURATION = '0.25s'; // Set the duration of the zoom animation
+      }}
     >
       {/* Include your SVG Overlay here */}
       <SvgOverlay
