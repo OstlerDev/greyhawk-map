@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import L from 'leaflet'
-import { MapContainer, TileLayer, useMap } from 'react-leaflet'
+import { MapContainer, useMap } from 'react-leaflet'
 
 // import 'leaflet.offline'
 
