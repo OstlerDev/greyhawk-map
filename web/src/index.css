@@ -1,5 +1,17 @@
 @import "~leaflet/dist/leaflet.css";
 
+/* Enable Hardware Acceleration for Leaflet! */
+.leaflet-pane {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+.leaflet-map-pane {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
