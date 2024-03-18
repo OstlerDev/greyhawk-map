@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - main  # Set to the default branch
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   deploy:
