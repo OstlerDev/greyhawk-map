@@ -13,8 +13,7 @@ import {
 import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
-  Layers as LayersIcon,
-  HexagonIcon
+  Layers as LayersIcon
 } from '@mui/icons-material';
 
 const LayerToggle = ({ layersVisible, toggleLayer }) => {
