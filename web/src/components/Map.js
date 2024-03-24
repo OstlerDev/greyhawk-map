@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import L from 'leaflet'
 import { MapContainer, useMap } from 'react-leaflet'
+import { 
+  Hexagon as HexagonIcon,
+  Token as TokenIcon
+} from '@mui/icons-material';
 
-// import 'leaflet.offline'
+import LayerToggle from './LayerToggle';
+
 
 const MAP_NAME = "World of Greyhawk, Darlene, Rev 12c.svg"
 
@@ -17,6 +22,30 @@ const minZoomLevel = 2.75
 const maxZoomLevel = 10
 
 const ADnDMap = () => {
+  const [layersVisible, setLayersVisible] = useState({
+    Hex: {
+      label: "30 Mile Hexagons",
+      visible: true,
+      icon: <HexagonIcon color="action" style={{ marginRight: 8 }} />
+    },
+    Hex_6_mile: {
+      label: "6 Mile Hexagons",
+      visible: false,
+      icon: <TokenIcon color="action" style={{ marginRight: 8 }} />
+    }
+    // ... Add the rest of our desired layers here
+  });
+
+  const toggleLayer = (layerId, isVisible) => {
+    setLayersVisible((prevLayersVisible) => ({
+      ...prevLayersVisible,
+      [layerId]: {
+        ...prevLayersVisible[layerId],
+        visible: isVisible
+      }
+    }));
+  };
+
   // Define the bounds of the SVG overlay
   // These bounds should correspond to the actual geographical bounds your SVG represents
   const bounds = [
@@ -43,12 +72,16 @@ const ADnDMap = () => {
           // Add it to the map
           overlay.addTo(map);
 
-          // Add event listeners for interactivity if required
-          // Example: Add a hover effect
-          // const svgElement = overlay.getElement()
-          // svgElement.addEventListener('mouseover', function(e) {
-          //   // Your hover effect code here
-          // })
+          // After creating the overlay and adding it to the map
+          const overlayElement = overlay.getElement();
+
+          // Go through each layer and set its visibility
+          Object.keys(layersVisible).forEach(layerId => {
+            const layerElement = overlayElement.getElementById(layerId);
+            if (layerElement) {
+              layerElement.style.display = layersVisible[layerId].visible ? '' : 'none';
+            }
+          });
         })
 
       return () => {
@@ -89,7 +122,7 @@ const ADnDMap = () => {
         L.DomUtil.TRANSITION_DURATION = '0.25s'; // Set the duration of the zoom animation
       }}
     >
-      {/* Include your SVG Overlay here */}
+      <LayerToggle layersVisible={layersVisible} toggleLayer={toggleLayer} />
       <SvgOverlay
         url={`${process.env.PUBLIC_URL}/${encodeURIComponent(MAP_NAME)}`}
         bounds={bounds}
