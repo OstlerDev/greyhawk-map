@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import L from 'leaflet'
 import { MapContainer, useMap } from 'react-leaflet'
+import { 
+  Hexagon as HexagonIcon,
+  Token as TokenIcon
+} from '@mui/icons-material';
 
-// import 'leaflet.offline'
+import LayerToggle from './LayerToggle';
+
 
 const MAP_NAME = "World of Greyhawk, Darlene, Rev 12c.svg"
 
@@ -18,15 +23,26 @@ const maxZoomLevel = 10
 
 const ADnDMap = () => {
   const [layersVisible, setLayersVisible] = useState({
-    Hex: true,
-    Hex_6_mile: false,
+    Hex: {
+      label: "30 Mile Hexagons",
+      visible: true,
+      icon: <HexagonIcon color="action" style={{ marginRight: 8 }} />
+    },
+    Hex_6_mile: {
+      label: "6 Mile Hexagons",
+      visible: false,
+      icon: <TokenIcon color="action" style={{ marginRight: 8 }} />
+    }
     // ... Add the rest of our desired layers here
   });
 
   const toggleLayer = (layerId, isVisible) => {
     setLayersVisible((prevLayersVisible) => ({
       ...prevLayersVisible,
-      [layerId]: isVisible,
+      [layerId]: {
+        ...prevLayersVisible[layerId],
+        visible: isVisible
+      }
     }));
   };
 
@@ -63,7 +79,7 @@ const ADnDMap = () => {
           Object.keys(layersVisible).forEach(layerId => {
             const layerElement = overlayElement.getElementById(layerId);
             if (layerElement) {
-              layerElement.style.display = layersVisible[layerId] ? '' : 'none';
+              layerElement.style.display = layersVisible[layerId].visible ? '' : 'none';
             }
           });
         })
@@ -80,16 +96,6 @@ const ADnDMap = () => {
 
     return null // This component does not render anything to the DOM itself
   }
-
-  const layerToggles = Object.keys(layersVisible).map(layerId => (
-    <LayerToggle
-      key={layerId}
-      layerId={layerId}
-      label={layerId.replace('_', ' ')} // Replace underscores with spaces for better display
-      checked={layersVisible[layerId]}
-      onChange={toggleLayer}
-    />
-  ));
 
   return (
     <MapContainer 
@@ -116,9 +122,7 @@ const ADnDMap = () => {
         L.DomUtil.TRANSITION_DURATION = '0.25s'; // Set the duration of the zoom animation
       }}
     >
-      <div className="map-controls">
-        {layerToggles}
-      </div>
+      <LayerToggle layersVisible={layersVisible} toggleLayer={toggleLayer} />
       <SvgOverlay
         url={`${process.env.PUBLIC_URL}/${encodeURIComponent(MAP_NAME)}`}
         bounds={bounds}
@@ -126,21 +130,5 @@ const ADnDMap = () => {
     </MapContainer>
   )
 }
-
-const LayerToggle = ({ layerId, label, checked, onChange }) => {
-  return (
-    <div>
-      <label>
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => onChange(layerId, e.target.checked)}
-        />
-        {label}
-      </label>
-    </div>
-  );
-};
-
 
 export default ADnDMap
